@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF><UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable><ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>Ember</AssemblyName><Version>0.5.3</Version>
+    <ApplicationIcon Condition="Exists('Assets/ember.ico')">Assets/ember.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup><Compile Remove="Bridge/**/*.cs"/><Content Include="Bridge/ConnectionPolicy.cs" CopyToOutputDirectory="PreserveNewest"/><Content Include="Bridge/BleDiscovery.cs" CopyToOutputDirectory="PreserveNewest"/><Content Include="BleBridge.ps1" CopyToOutputDirectory="PreserveNewest" /><Resource Include="Assets/*" /></ItemGroup>
+</Project>

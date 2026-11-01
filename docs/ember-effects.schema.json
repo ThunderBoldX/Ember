@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ember effects v1 / v2",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "version",
+        "effects"
+      ],
+      "properties": {
+        "format": {
+          "const": "ember-effects"
+        },
+        "version": {
+          "const": 1
+        },
+        "effects": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "$ref": "#/$defs/effectV1"
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "version",
+        "effects"
+      ],
+      "properties": {
+        "format": {
+          "const": "ember-effects"
+        },
+        "version": {
+          "const": 2
+        },
+        "effects": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "$ref": "#/$defs/effectV2"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "stepV1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "color",
+        "durationMs",
+        "transition",
+        "trigger"
+      ],
+      "properties": {
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 125,
+          "maximum": 60000
+        },
+        "transition": {
+          "enum": [
+            "cut",
+            "fade"
+          ]
+        },
+        "trigger": {
+          "enum": [
+            "timer",
+            "musicBeat"
+          ]
+        }
+      }
+    },
+    "stepV2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "color",
+        "durationMs",
+        "transition",
+        "trigger",
+        "condition"
+      ],
+      "properties": {
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 125,
+          "maximum": 60000
+        },
+        "transition": {
+          "enum": [
+            "cut",
+            "fade"
+          ]
+        },
+        "trigger": {
+          "enum": [
+            "timer",
+            "musicBeat",
+            "musicBass",
+            "musicPeak",
+            "musicSilence",
+            "musicLevel",
+            "manual",
+            "musicBeatOrTimer"
+          ]
+        },
+        "condition": {
+          "$ref": "#/$defs/condition"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "trigger": {
+                "const": "musicBeatOrTimer"
+              }
+            },
+            "required": [
+              "trigger"
+            ]
+          },
+          "then": {
+            "properties": {
+              "condition": {
+                "properties": {
+                  "timeoutMs": {
+                    "minimum": 125
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "thresholdDb",
+        "beatCount",
+        "holdMs",
+        "timeoutMs"
+      ],
+      "properties": {
+        "thresholdDb": {
+          "type": "number",
+          "minimum": -60,
+          "maximum": 0
+        },
+        "beatCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "holdMs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30000
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "anyOf": [
+            {
+              "const": 0
+            },
+            {
+              "minimum": 125,
+              "maximum": 120000
+            }
+          ]
+        }
+      }
+    },
+    "effectV1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "repeat",
+        "steps"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "pattern": "\\S"
+        },
+        "repeat": {
+          "type": "boolean"
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/stepV1"
+          }
+        }
+      }
+    },
+    "effectV2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "repeat",
+        "steps"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "pattern": "\\S"
+        },
+        "repeat": {
+          "type": "boolean"
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/stepV2"
+          }
+        }
+      }
+    }
+  }
+}

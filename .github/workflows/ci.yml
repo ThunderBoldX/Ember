@@ -1,0 +1,77 @@
+name: Build and test
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Documentation and credential hygiene
+        run: python scripts/check-publication.py
+      - name: Windows build and unit tests
+        run: |
+          ./windows/Build.ps1
+          dotnet run --project windows/Tests/Tests.csproj -c Release --configfile windows/NuGet.Config
+          if ($LASTEXITCODE -ne 0) { throw 'Windows tests failed' }
+      - name: WPF single-click regression fixture
+        run: |
+          $env:EMBER_TEST_BRIDGE = (Resolve-Path windows/Tests/SingleClickFixture.ps1).Path
+          $dll = (Resolve-Path windows/Ember/bin/Release/net10.0-windows/Ember.dll).Path
+          $p = Start-Process dotnet -ArgumentList @($dll, '--verify-effects') -Wait -PassThru
+          Get-Content windows/Ember/bin/Release/net10.0-windows/single-click-validation.txt
+          if ($p.ExitCode -ne 0) { throw 'Single-click fixture failed' }
+      - name: Android core and production BLE queue tests
+        run: |
+          ./android/Test-Core.ps1
+          python android/tests/BleDeliveryTest.py
+          if ($LASTEXITCODE -ne 0) { throw 'Android delivery fixture failed' }
+      - name: Browser UI and README layout
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install chromium
+          npm run test:ui
+          if ($LASTEXITCODE -ne 0) { throw 'Browser UI tests failed' }
+          node scripts/preview-readme.cjs
+          if ($LASTEXITCODE -ne 0) { throw 'README rendering failed' }
+      - name: Android compile check without signing keys
+        run: |
+          $sdk = $env:ANDROID_SDK_ROOT
+          if (!$sdk) { $sdk = $env:ANDROID_HOME }
+          if (!$sdk) { throw 'Android SDK is missing from the hosted runner' }
+          if (!(Test-Path "$sdk/platforms/android-35/android.jar") -or !(Test-Path "$sdk/build-tools/35.0.0/aapt2.exe")) {
+            $manager = Get-ChildItem "$sdk/cmdline-tools" -Recurse -Filter sdkmanager.bat | Select-Object -First 1
+            & $manager.FullName 'platforms;android-35' 'build-tools;35.0.0'
+            if ($LASTEXITCODE -ne 0) { throw 'SDK package installation failed' }
+          }
+          ./android/Build-Android.ps1 -SdkRoot $sdk -Unsigned
+      - name: Keep review artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ember-verification
+          path: |
+            artifacts/readme/*.png
+            windows/Ember/bin/Release/net10.0-windows/single-click-validation.txt
+          if-no-files-found: ignore

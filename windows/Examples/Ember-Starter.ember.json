@@ -1,0 +1,34 @@
+{
+  "format": "ember-effects",
+  "version": 1,
+  "effects": [
+    {
+      "name": "Вугілля / повільне дихання",
+      "repeat": true,
+      "steps": [
+        {"color":"#FF5A1F","durationMs":500,"transition":"cut","trigger":"timer"},
+        {"color":"#180400","durationMs":2000,"transition":"fade","trigger":"timer"},
+        {"color":"#FF5A1F","durationMs":1600,"transition":"fade","trigger":"timer"}
+      ]
+    },
+    {
+      "name": "Сутінки / кольорова хвиля",
+      "repeat": true,
+      "steps": [
+        {"color":"#FF5A1F","durationMs":500,"transition":"cut","trigger":"timer"},
+        {"color":"#8B22FF","durationMs":1800,"transition":"fade","trigger":"timer"},
+        {"color":"#0066FF","durationMs":1800,"transition":"fade","trigger":"timer"},
+        {"color":"#FF5A1F","durationMs":1800,"transition":"fade","trigger":"timer"}
+      ]
+    },
+    {
+      "name": "На біті / гаряча трійка",
+      "repeat": true,
+      "steps": [
+        {"color":"#FF4D00","durationMs":125,"transition":"cut","trigger":"musicBeat"},
+        {"color":"#FF9A30","durationMs":125,"transition":"cut","trigger":"musicBeat"},
+        {"color":"#C2410C","durationMs":125,"transition":"cut","trigger":"musicBeat"}
+      ]
+    }
+  ]
+}

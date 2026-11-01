@@ -1,0 +1,12 @@
+package ua.ember;
+import android.media.*;
+import android.media.projection.MediaProjection;
+import android.os.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public final class PlaybackAudio {
+ public interface Listener {void frame(EffectEngine.Signal signal);void error(String text);}
+ private AtomicBoolean active=new AtomicBoolean();private AudioRecord record;private Thread worker;
+ public void start(MediaProjection projection,Listener listener){if(Build.VERSION.SDK_INT<29)throw new IllegalStateException("Захоплення музики потребує Android 10 або новішого.");stop();active=new AtomicBoolean();final AtomicBoolean session=active;AudioPlaybackCaptureConfiguration config=new AudioPlaybackCaptureConfiguration.Builder(projection).addMatchingUsage(AudioAttributes.USAGE_MEDIA).addMatchingUsage(AudioAttributes.USAGE_GAME).addMatchingUsage(AudioAttributes.USAGE_UNKNOWN).build();AudioFormat format=new AudioFormat.Builder().setEncoding(AudioFormat.ENCODING_PCM_16BIT).setSampleRate(48000).setChannelMask(AudioFormat.CHANNEL_IN_MONO).build();record=new AudioRecord.Builder().setAudioFormat(format).setBufferSizeInBytes(Math.max(4096,AudioRecord.getMinBufferSize(48000,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT))).setAudioPlaybackCaptureConfig(config).build();if(record.getState()!=AudioRecord.STATE_INITIALIZED){record.release();record=null;throw new IllegalStateException("Не вдалося відкрити системний звук.");}try{record.startRecording();}catch(RuntimeException e){record.release();record=null;throw e;}active.set(true);final AudioRecord input=record;worker=new Thread(()->{android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);AudioAnalysis analysis=new AudioAnalysis();short[] pcm=new short[512];try{while(session.get()){int count=input.read(pcm,0,pcm.length,AudioRecord.READ_BLOCKING);if(count<=0){if(session.get())throw new IllegalStateException("Захоплення системного звуку зупинено · "+count);break;}long now=SystemClock.elapsedRealtime();listener.frame(analysis.analyze(pcm,count,48000,now/1000.0,now));}}catch(Exception e){if(session.getAndSet(false))listener.error(e.getMessage());}finally{try{input.stop();}catch(Exception ignored){}input.release();}},"Ember output audio");worker.start();}
+ public void stop(){active.set(false);AudioRecord old=record;record=null;if(old!=null)try{old.stop();}catch(Exception ignored){}if(worker!=null)worker.interrupt();worker=null;}
+}

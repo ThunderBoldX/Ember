@@ -1,0 +1,12 @@
+const assert=require('assert/strict'),fs=require('fs'),Pack=require('../assets/pack.js');let count=0;const test=(name,f)=>{f();console.log('PASS '+name);count++};const step={color:'#FF5A1F',durationMs:125,transition:'fade',trigger:'musicBeat',condition:Pack.defaults()},effect={name:'Тест',repeat:true,steps:[step]};
+test('v2 roundtrip preserves all gates',()=>{for(const trigger of Pack.triggers){const e=structuredClone(effect);e.steps[0].trigger=trigger;e.steps[0].condition={thresholdDb:-12,beatCount:3,holdMs:500,timeoutMs:1000};assert.deepEqual(Pack.parse(Pack.pack([e])),[e])}});
+test('desktop v1 defaults',()=>{const list=Pack.parse(fs.readFileSync(require('path').join(__dirname,'../Examples/Ember-Starter.ember.json'),'utf8'));assert.equal(list.length,3);assert.deepEqual(list[0].steps[0].condition,Pack.defaults())});
+test('duplicate keys rejected',()=>assert.throws(()=>Pack.parse(Pack.pack([effect]).replace('"version": 2','"version": 2, "version": 2'))));
+test('unknown fields rejected',()=>assert.throws(()=>Pack.effect({...effect,script:'alert(1)'})));
+test('names match Windows 60 UTF16 limit',()=>assert.throws(()=>Pack.effect({...effect,name:'a'.repeat(61)})));
+for(const [key,value]of [['beatCount',17],['holdMs',30001],['thresholdDb',NaN],['timeoutMs',100]])test('invalid '+key,()=>{const e=structuredClone(effect);e.steps[0].condition[key]=value;assert.throws(()=>Pack.effect(e))});
+test('beat or timer needs timeout',()=>{const e=structuredClone(effect);e.steps[0].trigger='musicBeatOrTimer';assert.throws(()=>Pack.effect(e))});
+test('sensor condition rejected',()=>{const e=structuredClone(effect);e.steps[0].trigger='stripSound';assert.throws(()=>Pack.effect(e))});
+test('size limit',()=>assert.throws(()=>Pack.parse(' '.repeat(1048577))));
+test('escape strings and braces parsed correctly',()=>{const e={...effect,name:'" { } [ ] \\ тест'};assert.deepEqual(Pack.parse(Pack.pack([e])),[e])});
+console.log('TOTAL '+count+' PASS');

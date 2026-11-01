@@ -1,0 +1,5 @@
+{
+ "name":"ember-development-tools","private":true,"version":"0.5.3",
+ "scripts":{"test:ui":"node android/tests/UiTest.cjs","test:format":"node android/tests/PackTest.cjs","screenshots:android":"node scripts/capture-android.cjs"},
+ "devDependencies":{"playwright":"1.62.1","marked":"17.0.1"}
+}

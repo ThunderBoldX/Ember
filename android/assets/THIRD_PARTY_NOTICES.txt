@@ -1,0 +1,4 @@
+Ember source: MIT, copyright 2026 ThunderBoldX.
+ELK protocol references: dave-code-ruiz/elkbledom and muntahics/ELK-BLEDOM; original MIT notices are retained under assets/licenses.
+Triones packet reference: https://github.com/madhead/saberlight/blob/master/protocols/Triones/protocol.md (no upstream files bundled).
+Android platform APIs and WebView are provided by the operating system.

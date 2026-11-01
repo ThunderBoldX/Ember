@@ -1,0 +1,108 @@
+{
+  "format": "ember-effects",
+  "version": 2,
+  "effects": [
+    {
+      "name": "Жар на басі",
+      "repeat": true,
+      "steps": [
+        {
+          "color": "#FF5A1F",
+          "durationMs": 250,
+          "transition": "fade",
+          "trigger": "musicBass",
+          "condition": {
+            "thresholdDb": -24,
+            "beatCount": 1,
+            "holdMs": 100,
+            "timeoutMs": 3000
+          }
+        },
+        {
+          "color": "#220600",
+          "durationMs": 900,
+          "transition": "fade",
+          "trigger": "timer",
+          "condition": {
+            "thresholdDb": -24,
+            "beatCount": 1,
+            "holdMs": 0,
+            "timeoutMs": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "Чотири біти — новий колір",
+      "repeat": true,
+      "steps": [
+        {
+          "color": "#FF5A1F",
+          "durationMs": 125,
+          "transition": "fade",
+          "trigger": "musicBeatOrTimer",
+          "condition": {
+            "thresholdDb": -24,
+            "beatCount": 4,
+            "holdMs": 0,
+            "timeoutMs": 4000
+          }
+        },
+        {
+          "color": "#FFFFFF",
+          "durationMs": 125,
+          "transition": "fade",
+          "trigger": "musicBeatOrTimer",
+          "condition": {
+            "thresholdDb": -24,
+            "beatCount": 4,
+            "holdMs": 0,
+            "timeoutMs": 4000
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ручна сцена",
+      "repeat": false,
+      "steps": [
+        {
+          "color": "#FF5A1F",
+          "durationMs": 1000,
+          "transition": "fade",
+          "trigger": "manual",
+          "condition": {
+            "thresholdDb": -24,
+            "beatCount": 1,
+            "holdMs": 0,
+            "timeoutMs": 0
+          }
+        },
+        {
+          "color": "#220600",
+          "durationMs": 2000,
+          "transition": "fade",
+          "trigger": "manual",
+          "condition": {
+            "thresholdDb": -24,
+            "beatCount": 1,
+            "holdMs": 0,
+            "timeoutMs": 0
+          }
+        },
+        {
+          "color": "#000000",
+          "durationMs": 500,
+          "transition": "fade",
+          "trigger": "timer",
+          "condition": {
+            "thresholdDb": -24,
+            "beatCount": 1,
+            "holdMs": 0,
+            "timeoutMs": 0
+          }
+        }
+      ]
+    }
+  ]
+}

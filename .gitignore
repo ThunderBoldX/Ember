@@ -1,0 +1,45 @@
+# Build outputs and downloaded toolchains
+**/bin/
+**/obj/
+**/build/
+**/outputs/
+**/runtime/
+**/work/
+**/tools/sdk/
+artifacts/
+releases/
+node_modules/
+.playwright/
+test-results/
+playwright-report/
+__pycache__/
+*.pyc
+*.pdb
+*.log
+*.tmp
+# Local state and credentials
+**/signing/
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+settings.json
+effects.json
+local.properties
+*.user
+*.suo
+.vs/
+.idea/
+.DS_Store
+Thumbs.db
+# Installers belong in GitHub Releases
+*.exe
+*.dll
+*.apk
+*.idsig
+*.zip

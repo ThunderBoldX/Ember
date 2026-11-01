@@ -1,0 +1,12 @@
+const fs=require('fs'),path=require('path');const {pathToFileURL}=require('url');const {chromium}=require('playwright');
+(async()=>{const {marked}=await import('marked');const root=path.resolve(__dirname,'..'),output=path.join(root,'artifacts/readme');fs.mkdirSync(output,{recursive:true});const browser=await chromium.launch({headless:true});
+ for(const name of ['README.md','README_UK.md']){
+  const html=`<!doctype html><html lang="${name.includes('_UK')?'uk':'en'}"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><base href="${pathToFileURL(root+path.sep).href}"><style>html{background:#0d1117;color:#e6edf3;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{margin:0}.markdown-body{max-width:980px;margin:24px auto;padding:40px;border:1px solid #30363d;border-radius:6px;overflow-wrap:break-word}h1,h2{border-bottom:1px solid #30363d;padding-bottom:.3em}h2{margin-top:28px}h3{margin-top:24px}img{max-width:100%;height:auto}a{color:#58a6ff}table{border-collapse:collapse;display:block;max-width:100%;overflow:auto}td,th{padding:6px 13px;border:1px solid #30363d}th{background:#161b22}pre{overflow:auto;padding:16px;background:#161b22;border-radius:6px}code{font:13px/1.6 Consolas,monospace}p,ul,ol,table,pre{margin-bottom:16px}details{padding:8px 0}summary{cursor:pointer;color:#a5b4c3}@media(max-width:600px){.markdown-body{margin:0;padding:16px;border:0}body{font-size:15px}h2{font-size:22px}table{font-size:13px}td,th{padding:6px 8px}}</style><article class="markdown-body">${marked.parse(fs.readFileSync(path.join(root,name),'utf8'))}</article></html>`;
+  const file=path.join(output,name+'.html');fs.writeFileSync(file,html);
+  for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});await page.goto(pathToFileURL(file).href);await page.evaluate(()=>{for(const d of document.querySelectorAll('details'))d.open=true;});await page.waitForTimeout(150);
+   const result=await page.evaluate(()=>({width:document.documentElement.scrollWidth,view:innerWidth,broken:[...document.images].filter(i=>!i.complete||i.naturalWidth===0).map(i=>i.getAttribute('src'))}));
+   if(result.broken.length||result.width>result.view+1)throw new Error(name+' at '+width+': '+JSON.stringify(result));
+   await page.screenshot({path:path.join(output,name+'-'+width+'.png'),fullPage:true});await page.close();console.log('PASS '+name+' width '+width+'; images load; no page overflow');
+  }
+ }
+ await browser.close();})();
