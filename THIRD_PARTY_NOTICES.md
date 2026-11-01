@@ -9,7 +9,7 @@ The Windows Setup bundles Microsoft .NET 10 Core and Desktop runtimes. Their ori
 - [Microsoft .NET runtime license](docs/third-party/dotnet/LICENSE.txt)
 - [Microsoft .NET third-party notices](docs/third-party/dotnet/ThirdPartyNotices.txt)
 
-Runtime files are not checked into this source repository. `windows/Get-Runtime.ps1` downloads official Microsoft archives and verifies their published SHA-512 hashes when a runtime must be prepared for packaging.
+Runtime files are not checked into this source repository. `windows/Get-Runtime.ps1` copies the installed Windows x64 .NET 10 SDK's Core/Desktop runtimes, host and original license notices into an ignored packaging directory. No SDK compiler files are redistributed by that step.
 
 ## BLE protocol references
 

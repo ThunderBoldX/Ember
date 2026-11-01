@@ -34,13 +34,13 @@ Create the offline installer:
 ./windows/Build.ps1 -Setup
 ```
 
-`windows/Get-Runtime.ps1` downloads official .NET 10 Core/Desktop win-x64 archives when `windows/runtime` is absent, verifies the metadata SHA-512 hashes and retains runtime license files. Internet access is required for that first preparation. You may instead pass a complete runtime directory:
+When `windows/runtime` is absent, `windows/Get-Runtime.ps1` copies the Core/Desktop runtimes and host already installed with the Windows x64 .NET 10 SDK, retaining their original license notices. It selects installed .NET 10 servicing versions and leaves the SDK untouched. No extra runtime download is needed for this step. You may instead pass a complete runtime directory:
 
 ```powershell
 ./windows/Build.ps1 -Setup -RuntimeDirectory C:\path\to\complete-runtime
 ```
 
-Output: `artifacts/releases/Ember-Windows-v0.5.3-Setup.exe`. Packaging uses the built-in .NET Framework C# compiler for the small launcher/installer. The runtime version used for the published artifact is recorded in its release validation report; a fresh default packaging run can use a newer .NET 10 servicing runtime.
+Output: `artifacts/releases/Ember-Windows-v0.5.3-Setup.exe`. Packaging uses the built-in .NET Framework C# compiler for the small launcher/installer. The runtime version used for the published artifact is recorded in its release validation report; a fresh default packaging run uses the available installed .NET 10 servicing runtimes.
 
 Українською: для запуску з коду потрібен SDK. Для готового Setup SDK не потрібний. `-Setup` додає runtime та створює один файл інсталятора; runtime і результати збірки ігноруються Git.
 
