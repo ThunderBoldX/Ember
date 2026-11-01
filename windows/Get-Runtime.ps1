@@ -14,7 +14,20 @@ foreach($component in @('runtime','windowsdesktop')){
  Invoke-WebRequest -Uri $file.url -OutFile $archive -UseBasicParsing
  if((Get-FileHash -LiteralPath $archive -Algorithm SHA512).Hash.ToLowerInvariant() -ne $file.hash.ToLowerInvariant()){throw 'Runtime archive checksum mismatch'}
  $zip=[IO.Compression.ZipFile]::OpenRead($archive)
- try{foreach($entry in $zip.Entries){if(!$entry.Name){continue};$path=[IO.Path]::GetFullPath((Join-Path $OutputDirectory $entry.FullName));if(!$path.StartsWith([IO.Path]::GetFullPath($OutputDirectory)+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)){throw 'Unexpected archive path'};New-Item -ItemType Directory -Path (Split-Path $path) -Force | Out-Null;[IO.Compression.ZipFileExtensions]::ExtractToFile($entry,$path,$true)}}finally{$zip.Dispose()}
+ try{
+  foreach($entry in $zip.Entries){
+   if(!$entry.Name){continue}
+   $path=[IO.Path]::GetFullPath((Join-Path $OutputDirectory $entry.FullName))
+   if(!$path.StartsWith([IO.Path]::GetFullPath($OutputDirectory)+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)){throw 'Unexpected archive path'}
+   New-Item -ItemType Directory -Path (Split-Path $path) -Force | Out-Null
+   [IO.Compression.ZipFileExtensions]::ExtractToFile($entry,$path,$true)
+   if($entry.FullName -in @('LICENSE.txt','ThirdPartyNotices.txt')){
+    $noticeDirectory=Join-Path $OutputDirectory ('licenses\'+$component)
+    New-Item -ItemType Directory -Path $noticeDirectory -Force | Out-Null
+    [IO.Compression.ZipFileExtensions]::ExtractToFile($entry,(Join-Path $noticeDirectory $entry.Name),$true)
+   }
+  }
+ }finally{$zip.Dispose()}
  Remove-Item -LiteralPath $archive
 }
 if(!(Test-Path (Join-Path $OutputDirectory 'dotnet.exe'))){throw 'Runtime host missing'}

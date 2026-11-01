@@ -12,6 +12,8 @@ foreach($name in @('Ember.dll','Ember.deps.json','Ember.runtimeconfig.json','Ble
 Copy-Item -LiteralPath (Join-Path $build 'Bridge') -Destination (Join-Path $stage 'app') -Recurse
 Copy-Item -LiteralPath $RuntimeDirectory -Destination (Join-Path $stage 'runtime') -Recurse
 foreach($name in @('LICENSE','THIRD_PARTY_NOTICES.md')){Copy-Item -LiteralPath (Join-Path $root $name) -Destination $stage}
+New-Item -ItemType Directory -Path (Join-Path $stage 'docs') -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $root 'docs\third-party') -Destination (Join-Path $stage 'docs') -Recurse
 Copy-Item -LiteralPath (Join-Path $root 'docs\INSTALL.md') -Destination (Join-Path $stage 'INSTALL.md')
 $csc=Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
 & $csc /nologo /target:winexe /platform:x64 /reference:System.Windows.Forms.dll "/win32icon:$source\Ember\Assets\ember.ico" "/out:$stage\Ember.exe" (Join-Path $source 'Launcher.cs')

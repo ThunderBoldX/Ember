@@ -1,6 +1,6 @@
 # Install Ember 0.5.3 / Встановлення Ember 0.5.3
 
-[English README](../README.md) · [Українська інструкція](../README_UK.md#install) · [Release v0.5.3](https://github.com/ThunderBoldX/Ember/releases/tag/v0.5.3)
+[English README](https://github.com/ThunderBoldX/Ember/blob/main/README.md) · [Українська інструкція](https://github.com/ThunderBoldX/Ember/blob/main/README_UK.md#install) · [Release v0.5.3](https://github.com/ThunderBoldX/Ember/releases/tag/v0.5.3)
 
 ## Windows
 
@@ -47,4 +47,4 @@ The Windows Setup has no Authenticode signature; its publisher may appear unknow
 
 Check physical power first. A controller saved in Windows can remain listed even when unplugged. Move closer and close other apps using the strip. Another phone may hold its BLE connection. `Unreachable` is a connection failure, not proof of an unsupported firmware protocol.
 
-More help: [English troubleshooting](../README.md#troubleshooting) · [Типові проблеми](../README_UK.md#типові-проблеми).
+More help: [English troubleshooting](https://github.com/ThunderBoldX/Ember/blob/main/README.md#troubleshooting) · [Типові проблеми](https://github.com/ThunderBoldX/Ember/blob/main/README_UK.md#типові-проблеми).
